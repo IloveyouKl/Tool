@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super AI Chat Bot by Accessible Resource</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 500px;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #222;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin-right: 5px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .small-button {
+            width: 48%;
+            font-size: 14px;
+        }
+
+        .help-text {
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+            color: #ddd;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Super AI Chat Bot by Accessible Resource</h1>
+        
+        <div class="chat-box" id="chat-box">
+            <p><strong>Welcome!</strong> This AI Chat Bot is proudly presented by <strong>Accessible Resource</strong>.</p>
+            <div class="help-text">
+                <p><strong>How to use this chatbot:</strong></p>
+                <ul>
+                    <li>Type your message in the input box below.</li>
+                    <li>Click the "Send" button to get a response from the AI.</li>
+                    <li>Wait a few seconds for the chatbot to reply.</li>
+                    <li>Scroll up to read the conversation history.</li>
+                    <li>For support, click "Telegram Channel".</li>
+                    <li>For feedback, click "Feedback".</li>
+                </ul>
+            </div>
+        </div>
+
+        <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+        <button onclick="sendMessage()">Send</button>
+
+        <div class="button-container">
+            <button class="small-button" onclick="openTelegramChannel()">Telegram Channel</button>
+            <button class="small-button" onclick="openFeedback()">Feedback</button>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = "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"; // Replace with your API key
+        const API_URL = "https://openrouter.ai/api/v1/chat/completions"; // API endpoint
+        const SITE_URL = "https://yourwebsite.com"; // Your site URL
+        const SITE_NAME = "Super AI Chat Bot by Accessible Resource";
+
+        async function sendMessage() {
+            const userInput = document.getElementById("user-input");
+            const chatBox = document.getElementById("chat-box");
+
+            if (userInput.value.trim() === "") return;
+
+            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput.value}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const userMessage = userInput.value;
+            userInput.value = ""; 
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${API_KEY}`,
+                        "HTTP-Referer": SITE_URL,
+                        "X-Title": SITE_NAME,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": "mistralai/mistral-nemo:free",
+                        "messages": [{ role: "user", content: userMessage }]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.choices && data.choices.length > 0) {
+                    const botReply = data.choices[0].message.content;
+                    chatBox.innerHTML += `<p><strong>Super AI Chat Bot:</strong> ${botReply}</p>`;
+                } else {
+                    chatBox.innerHTML += `<p style="color: red;"><strong>Error:</strong> No response from AI.</p>`;
+                }
+
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<p style="color: red;"><strong>Error:</strong> Could not get response.</p>`;
+            }
+        }
+
+        function openTelegramChannel() {
+            window.open("https://t.me/shopnotamal", "_blank");
+        }
+
+        function openFeedback() {
+            window.open("https://t.me/AccessibleResource", "_blank");
+        }
+    </script>
+</body>
+</html>
